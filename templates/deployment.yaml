@@ -1,0 +1,32 @@
+{{/* vim: set filetype=mustache: */}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "rebuildah.fullname" . }}
+  labels: {{- include "rebuildah.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      {{- include "rebuildah.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        {{- include "rebuildah.matchLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - image: quay.io/goern/rebuildah:v0.1.0-dev
+          name: rebuildah
+          ports:
+            - containerPort: 50051
+          resources:
+            limits:
+              cpu: "100m"
+              memory: 128Mi
+            requests:
+              cpu: "50m"
+              memory: 64Mi
+      serviceAccount: {{ template "rebuildah.fullname" . }}
+      serviceAccountName: {{ template "rebuildah.fullname" . }}
